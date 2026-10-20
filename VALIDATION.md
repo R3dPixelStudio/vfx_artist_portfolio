@@ -28,3 +28,7 @@ See docs/frontend-checks.json and the desktop, gallery, conversation and English
 Build/export checks: npm run check.
 
 Frontend checks: node scripts/frontend-check.mjs with the static preview on port 3000. The script uses the standard Windows Edge executable and software WebGL; this does not establish hardware performance.
+
+## 2026-10-20 deployment preparation
+
+npm run build passed strict TypeScript compilation and exported all 14 routes. npm run build:functions compiled the Pages Functions bundle. Texture dimensions use a validated helper compatible with installed Three.js types. Local Wrangler configuration is separated from production dashboard bindings. Backend behavior testing remains unverified. No remote database was provisioned and no Cloudflare deployment was performed during local build validation.

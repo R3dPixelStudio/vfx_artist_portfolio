@@ -1,3 +1,4 @@
+// Local preview only. Production bindings are configured in the Cloudflare Pages dashboard.
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "vfx-freelancer",

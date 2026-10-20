@@ -7,12 +7,13 @@
     "build": "next build --webpack",
     "typecheck": "next typegen && tsc --noEmit",
     "check": "npm run typecheck && npm run build && npm run test:export",
-    "preview": "wrangler pages dev out --ip 127.0.0.1 --port 3000",
+    "preview": "wrangler pages dev out --config wrangler.local.jsonc --ip 127.0.0.1 --port 3000",
     "art:generate": "node scripts/generate-art.mjs",
     "test:export": "node --test scripts/export.test.mjs",
     "preview:static": "node scripts/serve.mjs",
-    "db:migrate:local": "wrangler d1 migrations apply vfx-studio --local",
-    "admin:password": "node scripts/hash-password.mjs"
+    "db:migrate:local": "wrangler d1 migrations apply vfx-studio --local --config wrangler.local.jsonc",
+    "admin:password": "node scripts/hash-password.mjs",
+    "build:functions": "wrangler pages functions build functions --outdir .wrangler/functions-build"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",

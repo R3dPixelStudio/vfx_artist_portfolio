@@ -33,13 +33,7 @@ Copy `.dev.vars.example` to `.dev.vars` for local secrets. Set `ADMIN_PASSWORD_H
 
 ## Cloudflare Pages setup
 
-1. Create a D1 database named `vfx-studio`. Replace the all-zero `database_id` in `wrangler.jsonc` with its real ID; retain the `CMS_DB` binding.
-2. Apply `migrations/0001_studio.sql` using `npx wrangler d1 migrations apply vfx-studio --remote`.
-3. Connect this repository to Pages with build command `npm run build`, output `out`, and Node 22+. Pages must build the root `functions/` directory; uploading only `out` omits the backend.
-4. Add server secrets `ADMIN_PASSWORD_HASH`, `RATE_LIMIT_SALT`, and `GROQ_API_KEY` in Pages settings. Never use NEXT_PUBLIC variables for secrets. Set `SITE_URL` and build variable `NEXT_PUBLIC_SITE_URL` to the public HTTPS origin. `GROQ_MODEL` defaults to `llama-3.3-70b-versatile`.
-5. At `/admin/`, sign in, replace the sample profile and contact links, then create English articles with optional complete Persian translations. Save drafts privately or publish. Unpublish returns an article to draft. Published slugs remain stable.
-
-No remote database or secrets have been provisioned and nothing has been deployed.
+See [the deployment guide](docs/DEPLOYMENT.md) for exact GitHub/Pages settings, D1 initialization, bindings, secrets and redeployment. Production uses the Cloudflare dashboard; wrangler.local.jsonc is for explicitly selected local previews only.
 
 ## Relevant files
 
@@ -65,7 +59,7 @@ English pages: `/en/`, `/en/about/`, `/en/works/`, `/en/contact/`. Persian pages
 
 Each page has its own server-rendered title, description, expertise keywords, language and heading, plus Open Graph, Twitter and JSON-LD metadata. Set `NEXT_PUBLIC_SITE_URL` to the real public origin at build time to emit canonical, hreflang, social-image and static sitemap URLs. Set backend `SITE_URL` to that same origin: the Pages Function sitemap also lists all eight section pages alongside published journal posts. No public hostname is invented in the local template.
 
-These refinements were made locally. Tests, production builds and deployment were not run for this refinement pass.
+The production build and Pages Functions bundle were compiled on 2026-10-20 for the GitHub release. See docs/DEPLOYMENT.md for setup and verification limits.
 
 ## Content and safeguards
 

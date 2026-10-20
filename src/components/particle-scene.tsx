@@ -4,6 +4,7 @@ import {Canvas,useFrame,useThree} from '@react-three/fiber';
 import {PerspectiveCamera} from '@react-three/drei';
 import * as THREE from 'three';
 import {journey,motionEnabled,useStudio} from '@/lib/store';
+import {textureAspect} from '@/lib/texture-aspect';
 import {experienceCopy} from '@/lib/experience-copy';
 import {PULSE_COUNT,visualBridge} from '@/lib/visual-bridge';
 import {createPortalSeeds,portalPointGLSL} from '@/lib/portal-math';
@@ -185,7 +186,7 @@ function ParticleField({eco,animate,active}:{eco:boolean;animate:boolean;active:
   const heroReforming=channel==='hero'&&field.detailLive&&state.transitioning&&(state.destination!=='landing'||journey.homeReform>.001);
   u.uWorkImage.value=field.texture||placeholder;
   u.uImageMirror.value=state.locale==='fa'?1:0;
-  if(field.texture?.image){const image=field.texture.image;u.uWorkAspect.value=image.width/image.height;}
+  if(field.texture)u.uWorkAspect.value=textureAspect(field.texture);
   if(heroReforming){
    // The image renderer owns all visible points until its ring is complete.
    u.uWorks.value=0;u.uWorkSurface.value=1-journey.homeHandoff;

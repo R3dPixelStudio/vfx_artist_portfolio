@@ -4,6 +4,7 @@ import {Canvas,useFrame,useThree} from '@react-three/fiber';
 import {GPUComputationRenderer,type Variable} from 'three/addons/misc/GPUComputationRenderer.js';
 import * as THREE from 'three';
 import {journey,motionEnabled,useStudio} from '@/lib/store';
+import {textureAspect} from '@/lib/texture-aspect';
 import {createPortalCorrespondence,portalPointGLSL} from '@/lib/portal-math';
 import {PULSE_COUNT,visualBridge} from '@/lib/visual-bridge';
 type ImageChannelName='hero'|'work';
@@ -251,7 +252,7 @@ function ImageField({src,eco,animate,interaction,onReady,onTransition,bounds,slo
   if(group.current)group.current.visible=true;
   const width=rect.width/size.width*viewport.width,height=rect.height/size.height*viewport.height;
   const dt=Math.min(delta,.033);
-  const targetAspect=e.to.image.width/e.to.image.height;
+  const targetAspect=textureAspect(e.to,e.aspect);
   e.aspect=animate?THREE.MathUtils.damp(e.aspect,targetAspect,6,dt):targetAspect;
   const fit=Math.min(width/(e.aspect*2),height/2)*.94;
   group.current?.scale.setScalar(fit);
