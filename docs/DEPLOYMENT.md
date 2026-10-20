@@ -11,16 +11,16 @@ Workers & Pages → Create application → **Pages** → Connect to Git. Select 
 | Production branch | master |
 | Framework preset | Next.js (Static HTML Export) |
 | Root directory | Repository root; leave empty |
-| Build command | sh scripts/cloudflare-build.sh |
+| Build command | npm run build |
 | Build output directory | out |
-| Build variable | SKIP_DEPENDENCY_INSTALL = true |
+| SKIP_DEPENDENCY_INSTALL | Do not set; remove any previous override |
 | NODE_VERSION | Leave unset; .node-version selects 26.12.0 |
 
 If the creation form requires a Workers deploy command, return to the Pages flow. Do not use next-on-pages, next start, .next as the output directory, or npx wrangler deploy.
 
 Git-connected Pages builds compile the root functions/ directory alongside the static export. Dashboard drag-and-drop of out alone does not include this backend.
 
-The repository selects Node.js 26.12.0 using .node-version, which Cloudflare reads before installation. The build script upgrades npm to the latest stable release, reports both versions, installs exactly package-lock.json using npm ci, and builds the static export. There is no nested npx toolchain or OpenNext migration. SKIP_DEPENDENCY_INSTALL prevents a second install with the image default npm.
+The repository selects Node.js 26.12.0 using .node-version, which Cloudflare reads before installing dependencies. Let Pages install dependencies normally from package.json and package-lock.json, then run npm run build. No custom installation script or skip-install variable is required. Cloudflare uses the npm supplied by its selected Node toolchain; the latest npm is independently validated in GitHub Actions.
 
 GitHub Actions continues validating on the latest stable Node.js and npm. Cloudflare documents explicit Node versions, not an always-latest channel: update .node-version when adopting a newer Node release. Removing NODE_VERSION alone does not select the newest Node.
 
