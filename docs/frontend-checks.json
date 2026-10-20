@@ -1,0 +1,35 @@
+{
+  "checks": [
+    {
+      "name": "autonomous particles",
+      "difference": 0.07350745884773663
+    },
+    {
+      "name": "pause freezes canvas",
+      "difference": 0
+    },
+    {
+      "name": "resume animates canvas"
+    },
+    {
+      "name": "gallery next, keyboard, project dialog and Escape"
+    },
+    {
+      "name": "conversation and brief dialog"
+    },
+    {
+      "name": "rapid navigation settles"
+    },
+    {
+      "name": "explicit play overrides reduced-motion default"
+    },
+    {
+      "name": "en mobile landing, gallery, conversation, no horizontal overflow"
+    },
+    {
+      "name": "fa mobile landing, gallery, conversation, no horizontal overflow"
+    }
+  ],
+  "pageErrors": [],
+  "note": "Static frontend only; API requests intercepted with a not-configured response. No backend behavior tested."
+}

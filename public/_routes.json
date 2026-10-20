@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "include": [
+    "/api/*",
+    "/blog",
+    "/blog/*",
+    "/fa/blog",
+    "/fa/blog/*",
+    "/sitemap.xml",
+    "/robots.txt"
+  ],
+  "exclude": []
+}

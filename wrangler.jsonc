@@ -1,0 +1,13 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "vfx-freelancer",
+  "pages_build_output_dir": "./out",
+  "compatibility_date": "2026-10-16",
+  "d1_databases": [{
+    "binding": "CMS_DB",
+    "database_name": "vfx-studio",
+    "database_id": "00000000-0000-0000-0000-000000000000",
+    "migrations_dir": "migrations"
+  }],
+  "vars": { "GROQ_MODEL": "llama-3.3-70b-versatile", "CHAT_DAILY_LIMIT": "200" }
+}

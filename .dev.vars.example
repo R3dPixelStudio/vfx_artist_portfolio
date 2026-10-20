@@ -1,0 +1,7 @@
+# Copy to .dev.vars for local runtime. Real values must never be committed.
+ADMIN_PASSWORD_HASH=
+RATE_LIMIT_SALT=
+GROQ_API_KEY=
+GROQ_MODEL=llama-3.3-70b-versatile
+# Optional canonical origin. Otherwise use the request origin.
+SITE_URL=
