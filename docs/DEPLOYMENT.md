@@ -11,13 +11,16 @@ Workers & Pages → Create application → **Pages** → Connect to Git. Select 
 | Production branch | master |
 | Framework preset | Next.js (Static HTML Export) |
 | Root directory | Repository root; leave empty |
-| Build command | npm run build |
+| Build command | sh scripts/cloudflare-build.sh |
 | Build output directory | out |
-| Build variable | NODE_VERSION = 22 |
+| Build variable | SKIP_DEPENDENCY_INSTALL = true |
+| NODE_VERSION | Remove this override; the build command resolves current Node.js |
 
 If the creation form requires a Workers deploy command, return to the Pages flow. Do not use next-on-pages, next start, .next as the output directory, or npx wrangler deploy.
 
 Git-connected Pages builds compile the root functions/ directory alongside the static export. Dashboard drag-and-drop of out alone does not include this backend.
+
+The build script selects **node@latest** and **npm@latest** on every build, prints their versions, then runs npm ci and the production build under that toolchain. Remove any old NODE_VERSION override. GitHub Actions also requests the latest stable Node.js with node-version: node and check-latest: true.
 
 ## D1 database
 
