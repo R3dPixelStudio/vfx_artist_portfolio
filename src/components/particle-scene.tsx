@@ -301,7 +301,7 @@ export default function ParticleScene(){
  
  
  useEffect(()=>{visualBridge.workPortalLive=live&&!lost;return ()=>{visualBridge.workPortalLive=false;};},[live,lost]);
- const active=visible&&!obscured,eco=quality==='eco'||mobile;
+ const active=visible&&!obscured,eco=quality==='eco';
  return <div ref={host} className="world-canvas" data-live={live&&!lost}>
   {ready&&!lost&&<SceneBoundary key={generation} onError={()=>{setLost(true);setLive(false);}}>
    <Canvas aria-hidden="true" dpr={eco?1:[1,1.5]} frameloop={!active?'never':animate||transitioning?'always':'demand'}

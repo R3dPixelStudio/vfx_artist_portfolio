@@ -14,13 +14,15 @@ Workers & Pages → Create application → **Pages** → Connect to Git. Select 
 | Build command | sh scripts/cloudflare-build.sh |
 | Build output directory | out |
 | Build variable | SKIP_DEPENDENCY_INSTALL = true |
-| NODE_VERSION | Remove this override; the build command resolves current Node.js |
+| NODE_VERSION | Leave unset; .node-version selects 26.12.0 |
 
 If the creation form requires a Workers deploy command, return to the Pages flow. Do not use next-on-pages, next start, .next as the output directory, or npx wrangler deploy.
 
 Git-connected Pages builds compile the root functions/ directory alongside the static export. Dashboard drag-and-drop of out alone does not include this backend.
 
-The build script selects **node@latest** and **npm@latest** on every build, prints their versions, then runs npm ci and the production build under that toolchain. Remove any old NODE_VERSION override. GitHub Actions also requests the latest stable Node.js with node-version: node and check-latest: true.
+The repository selects Node.js 26.12.0 using .node-version, which Cloudflare reads before installation. The build script upgrades npm to the latest stable release, reports both versions, installs exactly package-lock.json using npm ci, and builds the static export. There is no nested npx toolchain or OpenNext migration. SKIP_DEPENDENCY_INSTALL prevents a second install with the image default npm.
+
+GitHub Actions continues validating on the latest stable Node.js and npm. Cloudflare documents explicit Node versions, not an always-latest channel: update .node-version when adopting a newer Node release. Removing NODE_VERSION alone does not select the newest Node.
 
 ## D1 database
 
@@ -76,7 +78,7 @@ When adding a custom domain, update both origin variables and redeploy to regene
 
 On 2026-10-20, **npm run build** passed strict TypeScript compilation and generated all 14 static routes. **npm run build:functions** compiled the Pages Functions bundle.
 
-This release fixes the texture-image typing that blocked production builds and separates the dummy local D1 binding from production. The particle visuals are preserved.
+This release fixes the texture-image typing that blocked production builds and separates the dummy local D1 binding from production. Mobile now uses the same high-quality particle sampling as desktop unless Eco is explicitly selected. Both canvases cap pixel density at 1.5, and image point sizes remain consistent across the portal handoff. Physical-device frame rate remains unverified.
 
 Live Cloudflare configuration, authentication, D1 publishing and real Groq responses remain unverified. No Cloudflare database or secrets were provisioned during local build validation.
 

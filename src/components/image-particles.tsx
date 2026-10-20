@@ -102,7 +102,7 @@ const drawVertex=`
 attribute vec2 aLookup;
 attribute vec4 aPortalSeed;
 uniform sampler2D uPositions,uFrom,uTo;
-uniform float uMix,uSize,uReveal,uStill,uAspect,uHover,uPresence,uHero,uMode,uClock,uTrace,uReform,uPortalClock,uPortalDepth,uPortalDpr;
+uniform float uMix,uSize,uRenderDpr,uReveal,uStill,uAspect,uHover,uPresence,uHero,uMode,uClock,uTrace,uReform,uPortalClock,uPortalDepth,uPortalDpr;
 uniform mat4 uPortalProjection;
 uniform vec4 uPortalScreen,uRipples[6];
 uniform vec3 uPortalScale;
@@ -151,7 +151,7 @@ void main(){
   vPortal=0.;
  }
  gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);
- gl_PointSize=size;
+ gl_PointSize=size*uRenderDpr;
 }
 `;
 const drawFragment=`
@@ -214,7 +214,7 @@ function ImageField({src,eco,animate,interaction,onReady,onTransition,bounds,slo
   for(let i=0;i<traceLookup.length/2;i++){const sample=(i*73+157)%(w*h);traceSeeds.set(portalSeeds.subarray(sample*4,sample*4+4),i*4);}
   return {position,lookup,portalSeeds,traceLookup,traceSeeds,tracePosition:new Float32Array(traceLookup.length/2*3)};
  },[w,h,eco]);
- const uniforms=useMemo<Record<string,THREE.IUniform>>(()=>({uPositions:{value:null},uFrom:{value:null},uTo:{value:null},uMix:{value:1},uSize:{value:1.7},uReveal:{value:0},uStill:{value:0},uAspect:{value:1.454545},uPointer:{value:new THREE.Vector2(30,30)},uHover:{value:0},uTap:{value:new THREE.Vector4(0,0,4,0)},uPresence:{value:0},uHero:{value:0},uMode:{value:0},uClock:{value:0},uTrace:{value:0},uReform:{value:0},uPortalClock:{value:0},uPortalDpr:{value:1},uPortalPointer:{value:new THREE.Vector2(50,50)},uPortalPulses:{value:Array.from({length:PULSE_COUNT},()=>new THREE.Vector4(0,0,-1000,0))},uPortalDepth:{value:0},uPortalProjection:{value:new THREE.Matrix4()},uPortalScreen:{value:new THREE.Vector4()},uPortalScale:{value:new THREE.Vector3(1,1,1)},uPortalGrid:{value:new THREE.Vector2()},uRipples:{value:Array.from({length:PULSE_COUNT},()=>new THREE.Vector4(0,0,10,0))}}),[]);
+ const uniforms=useMemo<Record<string,THREE.IUniform>>(()=>({uPositions:{value:null},uFrom:{value:null},uTo:{value:null},uMix:{value:1},uSize:{value:1.7},uRenderDpr:{value:1},uReveal:{value:0},uStill:{value:0},uAspect:{value:1.454545},uPointer:{value:new THREE.Vector2(30,30)},uHover:{value:0},uTap:{value:new THREE.Vector4(0,0,4,0)},uPresence:{value:0},uHero:{value:0},uMode:{value:0},uClock:{value:0},uTrace:{value:0},uReform:{value:0},uPortalClock:{value:0},uPortalDpr:{value:1},uPortalPointer:{value:new THREE.Vector2(50,50)},uPortalPulses:{value:Array.from({length:PULSE_COUNT},()=>new THREE.Vector4(0,0,-1000,0))},uPortalDepth:{value:0},uPortalProjection:{value:new THREE.Matrix4()},uPortalScreen:{value:new THREE.Vector4()},uPortalScale:{value:new THREE.Vector3(1,1,1)},uPortalGrid:{value:new THREE.Vector2()},uRipples:{value:Array.from({length:PULSE_COUNT},()=>new THREE.Vector4(0,0,10,0))}}),[]);
  const traceUniforms=useMemo(()=>({...uniforms,uTrace:{value:1}}),[uniforms]);
  useEffect(()=>{
   const gpu=new GPUComputationRenderer(w,h,gl);gpu.setDataType(THREE.HalfFloatType);
@@ -318,7 +318,8 @@ function ImageField({src,eco,animate,interaction,onReady,onTransition,bounds,slo
   if(tracers.current)tracers.current.visible=channel==='hero'&&animate&&uniforms.uReform.value<.35;
   const reported=animate&&e.arrival&&visualBridge.workPortalLive&&!field.mapFailed?Math.min(e.mix,field.formation):e.mix;
   if(e.reported!==reported){onTransition.current?.(String(e.to.userData.src),reported);e.reported=reported;}
-  uniforms.uSize.value=Math.min(3.8,Math.max(1.1,rect.width/w*gl.getPixelRatio()*1.65));
+  uniforms.uRenderDpr.value=gl.getPixelRatio();
+  uniforms.uSize.value=Math.min(3.8,Math.max(1.1,rect.width/w*1.65));
   for(const key in uniforms){m.uniforms[key].value=uniforms[key].value;if(surface.current)surface.current.uniforms[key].value=uniforms[key].value;if(traceMaterial.current&&key!=='uTrace')traceMaterial.current.uniforms[key].value=uniforms[key].value;}
   if(e.mix<1||e.pending)invalidate();
  });
@@ -340,10 +341,10 @@ function TileField({slot,src,eco,animate,bounds,interaction,onReady,onTransition
 }
 function Invalidation(){const invalidate=useThree(s=>s.invalidate);useEffect(()=>useStudio.subscribe(()=>invalidate()),[invalidate]);return null;}
 export default function ProjectPreviews({sources,bounds,interactions,onReady,onTransition,channel='work'}:PreviewsProps){
- const [lost,setLost]=useState(false),[visible,setVisible]=useState(true),[compact,setCompact]=useState(true);const host=useRef<HTMLDivElement>(null);
+ const [lost,setLost]=useState(false),[visible,setVisible]=useState(true);const host=useRef<HTMLDivElement>(null);
  const motion=useStudio(motionEnabled),quality=useStudio(s=>s.quality),blocked=useStudio(s=>s.overlayOpen||(channel==='work'&&s.transitioning));
  const readyHandler=useCallback((value:boolean)=>{onReady(value);if(!value)setLost(true);},[onReady]);
- useEffect(()=>{const media=matchMedia('(max-width:767px)');const sync=()=>setCompact(media.matches),visibility=()=>setVisible(!document.hidden);sync();visibility();media.addEventListener('change',sync);document.addEventListener('visibilitychange',visibility);return ()=>{media.removeEventListener('change',sync);document.removeEventListener('visibilitychange',visibility);};},[]);
+ useEffect(()=>{const visibility=()=>setVisible(!document.hidden);visibility();document.addEventListener('visibilitychange',visibility);return ()=>document.removeEventListener('visibilitychange',visibility);},[]);
  useEffect(()=>{const node=host.current;const fail=(event:Event)=>{event.preventDefault();setLost(true);onReady(false);};node?.addEventListener('webglcontextlost',fail,true);return ()=>node?.removeEventListener('webglcontextlost',fail,true);},[onReady]);
- return <div className="project-particle-world" ref={host}>{!lost&&<ImageBoundary failed={()=>{setLost(true);onReady(false);}}><Canvas orthographic camera={{position:[0,0,4],zoom:100,near:.1,far:20}} dpr={1} frameloop={!visible||blocked?'never':motion?'always':'demand'} gl={{alpha:true,antialias:false,powerPreference:'low-power'}}><Invalidation/>{sources.map((src,i)=><TileField channel={channel} key={i} slot={i} src={src} eco={compact||quality==='eco'} animate={motion&&visible&&!blocked} bounds={bounds} interaction={interactions[i]} onReady={readyHandler} onTransition={onTransition}/>)}</Canvas></ImageBoundary>}</div>;
+ return <div className="project-particle-world" ref={host}>{!lost&&<ImageBoundary failed={()=>{setLost(true);onReady(false);}}><Canvas orthographic camera={{position:[0,0,4],zoom:100,near:.1,far:20}} dpr={quality==='eco'?1:[1,1.5]} frameloop={!visible||blocked?'never':motion?'always':'demand'} gl={{alpha:true,antialias:false,powerPreference:'low-power'}}><Invalidation/>{sources.map((src,i)=><TileField channel={channel} key={i} slot={i} src={src} eco={quality==='eco'} animate={motion&&visible&&!blocked} bounds={bounds} interaction={interactions[i]} onReady={readyHandler} onTransition={onTransition}/>)}</Canvas></ImageBoundary>}</div>;
 }
